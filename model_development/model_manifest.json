@@ -1,0 +1,34 @@
+{
+  "features": [
+    "electricity_kwh",
+    "diesel_litres",
+    "output_tons",
+    "temp_c",
+    "equipment_load_pct",
+    "shift",
+    "hour",
+    "dow",
+    "is_weekend",
+    "electricity_kwh_lag1",
+    "electricity_kwh_lag4",
+    "electricity_kwh_roll4",
+    "electricity_kwh_roll96",
+    "diesel_litres_lag1",
+    "diesel_litres_lag4",
+    "diesel_litres_roll4",
+    "diesel_litres_roll96",
+    "output_tons_lag1",
+    "output_tons_lag4",
+    "output_tons_roll4",
+    "output_tons_roll96"
+  ],
+  "target": "co2e_observed_kg",
+  "rows": 69144,
+  "train_rows": 55315,
+  "test_rows": 13829,
+  "metrics": {
+    "mae": 3.9580088618121487,
+    "rmse": 5.232999831176332,
+    "r2": 0.9999833689586339
+  }
+}

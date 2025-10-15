@@ -1,0 +1,23 @@
+# Git ignore file for IBM-Z-Datathon
+# Ignore joblib files (model artifacts)
+*.joblib
+# Specifically ignore joblib files inside model_development
+model_development/*.joblib
+
+# Common Python ignores
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+env/
+myenv/
+.env
+.venv/
+theenv/

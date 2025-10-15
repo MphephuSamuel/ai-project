@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Nature-inspired earth tones */
+    --background: 45 20% 96%;
+    --foreground: 140 40% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 140 40% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 140 40% 15%;
+
+    /* Forest green primary */
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Earth brown secondary */
+    --secondary: 30 35% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Sage muted tones */
+    --muted: 120 15% 85%;
+    --muted-foreground: 140 20% 40%;
+
+    /* Sky blue accent */
+    --accent: 195 70% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Eco-reward gold */
+    --reward: 43 96% 56%;
+    --reward-foreground: 140 40% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 15% 80%;
+    --input: 120 15% 90%;
+    --ring: 142 76% 36%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-earth: linear-gradient(135deg, hsl(142 76% 36%), hsl(158 64% 52%));
+    --gradient-sky: linear-gradient(135deg, hsl(195 70% 55%), hsl(204 82% 65%));
+    --gradient-reward: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(142 76% 36% / 0.15);
+    --shadow-medium: 0 8px 30px -6px hsl(142 76% 36% / 0.2);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 140 30% 8%;
+    --foreground: 120 15% 90%;
+
+    --card: 140 25% 12%;
+    --card-foreground: 120 15% 90%;
+
+    --popover: 140 25% 12%;
+    --popover-foreground: 120 15% 90%;
+
+    --primary: 142 76% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 25% 35%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 140 20% 20%;
+    --muted-foreground: 120 10% 65%;
+
+    --accent: 195 65% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --reward: 43 96% 56%;
+    --reward-foreground: 140 40% 15%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 140 20% 25%;
+    --input: 140 20% 20%;
+    --ring: 142 76% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
