@@ -112,12 +112,17 @@ export default function PredictPage(){
           {seriesData && xAxisData && (
             <Box sx={{ mt:2, height: isMobile ? 260 : 320, p:0, width: '100%', bgcolor: 'transparent' }}>
                 <LineChart
-                  series={[{ id: 'trend', data: seriesData, label: 'Unemployment', showMark: true, shape: 'circle' }]}
-                  xAxis={[{ data: xAxisData, scaleType: 'point', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, label: 'Year' }]}
-                  colors={[theme.palette.primary.main]}
+                  series={[
+                    { id: 'trend', data: seriesData, label: 'Unemployment', showMark: true, shape: 'circle' },
+                    // a helper series that only contains the final (predicted) point so it can be emphasized
+                    { id: 'pred', data: seriesData.map((v, i) => (i === seriesData.length - 1 ? v : null)), showMark: true, shape: 'circle', label: '' }
+                  ]}
+                  xAxis={[{ data: xAxisData, scaleType: 'point', tickLabelStyle: { fontSize: 11, fill: theme.palette.text.secondary }, label: 'Year' }]}
+                  colors={[theme.palette.primary.main, theme.palette.secondary.main]}
                   grid={{ vertical: false, horizontal: true }}
                   height={isMobile ? 260 : 320}
-                  margin={{ left: isMobile ? 8 : 36, right: 12, top: 8, bottom: 30 }}
+                  // give extra right/bottom margin so the last tick and label are not clipped
+                  margin={{ left: isMobile ? 8 : 36, right: isMobile ? 24 : 56, top: 8, bottom: 40 }}
                   sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 1, p: 1 }}
                   yAxis={[{ label: 'Unemployment rate (youth)', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, valueFormatter: (v: any) => typeof v === 'number' ? Number(v).toFixed(1) : String(v) }]}
                   slotProps={{

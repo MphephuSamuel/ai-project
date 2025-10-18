@@ -7,11 +7,39 @@ import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
+import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 
 export default function InfoPage(){
-  const [info, setInfo] = useState<any>(null)
-  useEffect(()=>{ getInfo().then(setInfo).catch(()=>setInfo(null)) }, [])
-  if(!info) return <Paper sx={{p:3, boxShadow:3}}><Typography>Unable to load model info</Typography></Paper>
+  const [info, setInfo] = useState<any | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(()=>{
+    let mounted = true
+    setLoading(true)
+    getInfo()
+      .then(data => { if(mounted){ setInfo(data); setError(null) } })
+      .catch((err)=>{ if(mounted){ setInfo(null); setError(err?.message || 'Unable to load model info') } })
+      .finally(()=>{ if(mounted) setLoading(false) })
+    return ()=>{ mounted = false }
+  }, [])
+
+  if(loading) return (
+    <Paper sx={{p:3, boxShadow:3, borderRadius:2}}>
+      <Box sx={{ display:'flex', alignItems:'center', gap:2 }}>
+        <CircularProgress size={20} />
+        <Typography>Loading model info…</Typography>
+      </Box>
+    </Paper>
+  )
+
+  if(error || !info) return (
+    <Paper sx={{p:3, boxShadow:3}}>
+      <Typography>Unable to load model info{error ? `: ${error}` : ''}</Typography>
+    </Paper>
+  )
+
   return (
     <Paper sx={{p:3, boxShadow:3, borderRadius:2}}>
       <Typography variant="h5" gutterBottom sx={{ display:'flex', gap:1, alignItems:'center' }}><InfoIcon /> Model Info</Typography>
