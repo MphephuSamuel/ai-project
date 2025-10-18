@@ -14,8 +14,6 @@ import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
 
 const FEATURE_ORDER = ["2012","2013","2014","2015","2016","2017"]
-// Display labels like Year 1..Year N instead of concrete calendar years
-const FEATURE_DISPLAY_LABELS = FEATURE_ORDER.map((_, i) => `Year ${i + 1}`)
 
 export default function PredictPage(){
   const [values, setValues] = useState<string[]>(Array(FEATURE_ORDER.length).fill(''))
