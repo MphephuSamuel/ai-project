@@ -1,0 +1,12 @@
+{
+  "model": "ElasticNet",
+  "best_params": {
+    "alpha": 0.01,
+    "l1_ratio": 1
+  },
+  "training_shape": [
+    186,
+    6
+  ],
+  "created_at": "20251018T124847Z"
+}

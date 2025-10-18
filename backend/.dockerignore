@@ -1,0 +1,19 @@
+myenv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.local
+.env.*.local
+.env.production
+# include artifacts in the build context so they get copied into the image
+# (do NOT commit large model files to git for production; consider using secrets/storage)
+# artifacts/
+#*.joblib
+*.whl
+.vscode/
+.DS_Store
+
+# docker context size helpers
+model_development/
