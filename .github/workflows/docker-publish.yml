@@ -59,8 +59,30 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: sammydevv/unemployment-backend:latest
+          tags: |
+            sammydevv/unemployment-backend:latest
+            sammydevv/unemployment-backend:${{ github.sha }}
 
       # 5. Triggers the deployment on Render using the deploy hook
       - name: Trigger Render Deploy
-        run: curl "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        shell: bash
+        env:
+          IMAGE_REPO: sammydevv/unemployment-backend
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL is not set; skipping deploy trigger"
+            exit 0
+          fi
+          # Construct image tag using the full commit SHA and a short SHA
+          full_sha=${GITHUB_SHA}
+          short_sha=${GITHUB_SHA:0:7}
+          image_tag="$IMAGE_REPO:$full_sha"
+          echo "Triggering Render deploy hook for image: $image_tag"
+          payload=$(jq -nc --arg image "$image_tag" --arg full "$full_sha" --arg short "$short_sha" '{image: $image, sha: $full, short: $short}')
+          # POST JSON payload so Render (or a custom hook) can pick the desired image tag
+          status=$(curl -s -o /dev/stderr -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$payload" "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+          echo "Render hook HTTP status: $status"
+          if [[ "$status" -lt 200 || "$status" -ge 300 ]]; then
+            echo "Render deploy hook returned non-2xx status: $status"
+            exit 1
+          fi
