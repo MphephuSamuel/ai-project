@@ -1,9 +1,17 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { useState } from 'react'
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 // replaced CampaignIcon with a custom image icon in header
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
+import IconButton from '@mui/material/IconButton'
+import Drawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import MenuIcon from '@mui/icons-material/Menu'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
@@ -55,21 +63,56 @@ const theme = createTheme({
 })
 
 export default function App() {
+  const themeHook = useTheme()
+  const isMobile = useMediaQuery(themeHook.breakpoints.down('sm'))
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open)
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
         <AppBar position="static">
           <Toolbar>
+            {isMobile ? (
+              <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} sx={{ mr: 1 }}>
+                <MenuIcon />
+              </IconButton>
+            ) : null}
+
             <Typography variant="h6" sx={{ flexGrow: 1, display:'flex', alignItems:'center', gap:1 }} component={Link} to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <img src="/image.png" alt="icon" style={{ width:28, height:28, objectFit:'cover', borderRadius:6 }} />
-              Unemployment Rate Predictor
+              Unemployment Predictor
             </Typography>
-            <Button color="inherit" component={Link} to="/">Predict</Button>
-            <Button color="inherit" component={Link} to="/info">Model Info</Button>
-            <Button color="inherit" component={Link} to="/health">Health</Button>
+
+            {!isMobile && (
+              <>
+                <Button color="inherit" component={Link} to="/">Predict</Button>
+                <Button color="inherit" component={Link} to="/info">Model Info</Button>
+                <Button color="inherit" component={Link} to="/health">Health</Button>
+              </>
+            )}
           </Toolbar>
         </AppBar>
+
+        <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+          <Box sx={{ width: 240 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+            <List>
+              <ListItemButton component={Link} to="/">
+                <ListItemText primary="Predict" />
+              </ListItemButton>
+              <ListItemButton component={Link} to="/info">
+                <ListItemText primary="Model Info" />
+              </ListItemButton>
+              <ListItemButton component={Link} to="/health">
+                <ListItemText primary="Health" />
+              </ListItemButton>
+            </List>
+          </Box>
+        </Drawer>
 
         <Box sx={{ mt: 4, mb: 4 }}>
           <Container maxWidth="lg">
