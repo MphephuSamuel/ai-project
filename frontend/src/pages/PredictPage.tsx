@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTheme } from '@mui/material/styles'
 import { predict, predictBatch } from '../api'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -12,10 +13,12 @@ import Grid from '@mui/material/Grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
+import { LineChart } from '@mui/x-charts'
 
 const FEATURE_ORDER = ["2012","2013","2014","2015","2016","2017"]
 
 export default function PredictPage(){
+  const theme = useTheme()
   const [values, setValues] = useState<string[]>(Array(FEATURE_ORDER.length).fill(''))
   const [result, setResult] = useState<number | null>(null)
   const [model, setModel] = useState<string | undefined>(undefined)
@@ -23,6 +26,8 @@ export default function PredictPage(){
   const [snack, setSnack] = useState<{open:boolean;msg:string;severity?:'error'|'success'}>({open:false,msg:'',severity:'success'})
   const [batchText, setBatchText] = useState('')
   const [batchResults, setBatchResults] = useState<number[] | null>(null)
+  const [seriesData, setSeriesData] = useState<number[] | null>(null)
+  const [xAxisData, setXAxisData] = useState<(string | number)[] | null>(null)
   // Target year logic: allow user to pick the forecast year (Year 7 means predict next year)
   const currentYear = new Date().getFullYear()
   const lastFeatureYear = parseInt(FEATURE_ORDER[FEATURE_ORDER.length - 1], 10)
@@ -53,6 +58,12 @@ export default function PredictPage(){
     try{
       const res = await predict(nums)
       setResult(res.prediction); setModel(res.model)
+      // build series: historical years -> predicted year
+  const histYears = displayYears
+  const predLabel = String(targetYear)
+  // series: array of numeric values; xAxis: categorical labels
+  setSeriesData([...nums, res.prediction])
+  setXAxisData([...histYears, predLabel])
     }catch(e:any){ alert('Prediction error: '+(e?.message||e)) }
     setLoading(false)
   }
@@ -96,6 +107,22 @@ export default function PredictPage(){
           <Divider sx={{ mb:2 }} />
           <Typography variant="h6">Prediction: {Number(result).toFixed(2)}</Typography>
           <Typography variant="caption">Model: {model}</Typography>
+          {seriesData && xAxisData && (
+            <Box sx={{ mt:2, height: 320, p:1, bgcolor: 'transparent' }}>
+              <LineChart
+                series={[{ id: 'trend', data: seriesData, label: 'Unemployment', showMark: true, shape: 'circle' }]}
+                xAxis={[{ data: xAxisData, scaleType: 'point', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, label: 'Year' }]}
+                colors={[theme.palette.primary.main]}
+                grid={{ vertical: false, horizontal: true }}
+                height={320}
+                sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 1, p: 1 }}
+                yAxis={[{ label: 'Unemployment rate (youth)', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, valueFormatter: (v: any) => typeof v === 'number' ? Number(v).toFixed(1) : String(v) }]}
+                slotProps={{
+                  tooltip: { sx: { bgcolor: theme.palette.background.paper, color: theme.palette.text.primary, boxShadow: theme.shadows[3] } }
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
 
