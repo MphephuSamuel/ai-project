@@ -2,6 +2,7 @@ import os
 import joblib
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from glob import glob
 
@@ -18,6 +19,16 @@ DEFAULT_GLOB = os.path.join(ARTIFACTS_DIR, "pipeline_with_scaler_*.joblib")
 FEATURE_ORDER = ["2012", "2013", "2014", "2015", "2016", "2017"]
 
 app = FastAPI(title="ElasticNet Forecast API", version="1.0")
+
+# Allow CORS from any origin (permissive - intended for development / testing).
+# If you deploy to production, narrow the allowed origins.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class SinglePredictionRequest(BaseModel):
