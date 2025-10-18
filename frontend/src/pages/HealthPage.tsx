@@ -11,9 +11,9 @@ export default function HealthPage(){
   return (
     <Paper sx={{p:3, boxShadow:3, borderRadius:2}}>
       <Typography variant="h5" gutterBottom sx={{ display:'flex', gap:1, alignItems:'center' }}><HealthAndSafetyIcon /> Service Health</Typography>
-      <Typography>OK: {String(health.ok)}</Typography>
-      <Typography>Model loaded: {String(health.model_loaded)}</Typography>
-      <Typography>Pipeline: {health.pipeline_path}</Typography>
+      <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>OK: {String(health.ok)}</Typography>
+      <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>Model loaded: {String(health.model_loaded)}</Typography>
+      <Typography sx={{ wordBreak: 'break-all', overflowWrap: 'anywhere' }}>Pipeline: {health.pipeline_path}</Typography>
     </Paper>
   )
 }

@@ -43,18 +43,32 @@ export default function InfoPage(){
   return (
     <Paper sx={{p:3, boxShadow:3, borderRadius:2}}>
       <Typography variant="h5" gutterBottom sx={{ display:'flex', gap:1, alignItems:'center' }}><InfoIcon /> Model Info</Typography>
-      <Typography>Pipeline: {info.pipeline_path}</Typography>
+      <Typography sx={{ wordBreak: 'break-all', overflowWrap: 'anywhere' }}>Pipeline: {info.pipeline_path}</Typography>
       <Table>
         <TableBody>
-          <TableRow><TableCell>Feature order</TableCell><TableCell>{info.feature_order.join(', ')}</TableCell></TableRow>
-          <TableRow><TableCell>Intercept</TableCell><TableCell>{info.intercept}</TableCell></TableRow>
-          <TableRow><TableCell>Model class</TableCell><TableCell>{info.model_class}</TableCell></TableRow>
+          <TableRow>
+            <TableCell sx={{ verticalAlign: 'top', width: '35%' }}>Feature order</TableCell>
+            <TableCell sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{info.feature_order.join(', ')}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Intercept</TableCell>
+            <TableCell sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{String(info.intercept)}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Model class</TableCell>
+            <TableCell sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{String(info.model_class)}</TableCell>
+          </TableRow>
         </TableBody>
       </Table>
       <Typography sx={{mt:2}}>Coefficients</Typography>
       <Table>
         <TableBody>
-          {info.coefficients && info.coefficients.map((c:number,i:number)=>(<TableRow key={i}><TableCell>{info.feature_order[i]}</TableCell><TableCell>{c}</TableCell></TableRow>))}
+          {info.coefficients && info.coefficients.map((c:number,i:number)=>(
+            <TableRow key={i}>
+              <TableCell sx={{ width: '35%' }}>{info.feature_order[i]}</TableCell>
+              <TableCell sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{String(c)}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </Paper>
