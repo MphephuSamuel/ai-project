@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getInfo } from '../api'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'

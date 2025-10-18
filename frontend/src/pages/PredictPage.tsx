@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { predict, predictBatch } from '../api'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
