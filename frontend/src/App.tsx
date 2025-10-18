@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import CampaignIcon from '@mui/icons-material/Campaign'
+// replaced CampaignIcon with a custom image icon in header
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -62,7 +62,8 @@ export default function App() {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1, display:'flex', alignItems:'center', gap:1 }} component={Link} to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <CampaignIcon /> Unemployment Predictor
+              <img src="/image.png" alt="icon" style={{ width:28, height:28, objectFit:'cover', borderRadius:6 }} />
+              Unemployment Predictor
             </Typography>
             <Button color="inherit" component={Link} to="/">Predict</Button>
             <Button color="inherit" component={Link} to="/info">Model Info</Button>
