@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import MenuIcon from '@mui/icons-material/Menu'
 import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
 import Container from '@mui/material/Container'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
@@ -100,6 +101,12 @@ export default function App() {
 
         <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
           <Box sx={{ width: 240 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+            {/* Drawer header with logo */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2 }}>
+              <img src="/image.png" alt="logo" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 8 }} />
+              <Typography variant="h6" sx={{ fontSize: 16 }}>Unemployment Predictor</Typography>
+            </Box>
+            <Divider />
             <List>
               <ListItemButton component={Link} to="/">
                 <ListItemText primary="Predict" />
