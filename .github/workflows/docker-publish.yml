@@ -34,6 +34,25 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 3.5 Ensure model artifact is present in backend/artifacts (download if provided)
+      - name: Ensure model artifact available
+        shell: bash
+        run: |
+          set -e
+          mkdir -p backend/artifacts
+          # If an artifact already exists, keep it
+          if ls backend/artifacts/pipeline_with_scaler_*.joblib 1> /dev/null 2>&1; then
+            echo "Found existing pipeline artifact in backend/artifacts"
+          else
+            if [ -n "${{ secrets.MODEL_ARTIFACT_URL }}" ]; then
+              echo "No local artifact found — downloading from MODEL_ARTIFACT_URL"
+              curl -fsSL "${{ secrets.MODEL_ARTIFACT_URL }}" -o backend/artifacts/pipeline_with_scaler.joblib
+              echo "Downloaded artifact to backend/artifacts/pipeline_with_scaler.joblib"
+            else
+              echo "Warning: No pipeline artifact found in repo and MODEL_ARTIFACT_URL secret is not set. The built image may not include the model."
+            fi
+          fi
+
       # 4. Builds and pushes the Docker image from the 'backend' folder
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

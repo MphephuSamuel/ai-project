@@ -1,8 +1,5 @@
 # Git ignore file for IBM-Z-Datathon
-# Ignore joblib files (model artifacts)
-*.joblib
-# Specifically ignore joblib files inside model_development
-model_development/*.joblib
+
 
 # Common Python ignores
 __pycache__/
