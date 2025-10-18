@@ -25,15 +25,15 @@ import HealthPage from './pages/HealthPage'
 const theme = createTheme({
   palette: {
     mode: 'light',
-    primary: { main: '#0B72B9' }, // vibrant blue
-    secondary: { main: '#FF8A65' }, // warm accent
+    primary: { main: '#00897B' }, // A deep, professional teal
+    secondary: { main: '#FFA000' }, // A vibrant, warm amber
     background: {
-      default: '#f6f9fc',
+      default: '#f7f9fa', // A very light, clean gray
       paper: '#ffffff'
     },
     text: {
-      primary: '#0f1724',
-      secondary: '#475569'
+      primary: '#1a202c', // Dark, but not pure black
+      secondary: '#525f7f'
     }
   },
   typography: {
@@ -46,22 +46,23 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(90deg,#0B72B9 0%,#1976D2 100%)',
-          boxShadow: '0 4px 14px rgba(11,114,185,0.18)'
+          // A subtle gradient using the primary color
+          background: 'linear-gradient(90deg,#00897B 0%,#009688 100%)',
+          boxShadow: '0 4px 14px rgba(0, 137, 123, 0.18)' // Soft shadow based on primary color
         }
       }
     },
     MuiButton: {
       styleOverrides: {
         containedPrimary: {
-          background: 'linear-gradient(90deg,#0B72B9,#1976D2)',
+          background: 'linear-gradient(90deg,#00897B,#009688)',
           color: '#fff',
-          boxShadow: '0 6px 18px rgba(11,114,185,0.18)'
+          boxShadow: '0 6px 18px rgba(0, 137, 123, 0.18)' // Soft shadow
         }
       }
     }
   }
-})
+});
 
 export default function App() {
   const themeHook = useTheme()
