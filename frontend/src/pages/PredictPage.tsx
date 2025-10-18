@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { predict, predictBatch } from '../api'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -19,6 +20,7 @@ const FEATURE_ORDER = ["2012","2013","2014","2015","2016","2017"]
 
 export default function PredictPage(){
   const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [values, setValues] = useState<string[]>(Array(FEATURE_ORDER.length).fill(''))
   const [result, setResult] = useState<number | null>(null)
   const [model, setModel] = useState<string | undefined>(undefined)
@@ -108,20 +110,21 @@ export default function PredictPage(){
           <Typography variant="h6">Prediction: {Number(result).toFixed(2)}</Typography>
           <Typography variant="caption">Model: {model}</Typography>
           {seriesData && xAxisData && (
-            <Box sx={{ mt:2, height: 320, p:1, bgcolor: 'transparent' }}>
-              <LineChart
-                series={[{ id: 'trend', data: seriesData, label: 'Unemployment', showMark: true, shape: 'circle' }]}
-                xAxis={[{ data: xAxisData, scaleType: 'point', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, label: 'Year' }]}
-                colors={[theme.palette.primary.main]}
-                grid={{ vertical: false, horizontal: true }}
-                height={320}
-                sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 1, p: 1 }}
-                yAxis={[{ label: 'Unemployment rate (youth)', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, valueFormatter: (v: any) => typeof v === 'number' ? Number(v).toFixed(1) : String(v) }]}
-                slotProps={{
-                  tooltip: { sx: { bgcolor: theme.palette.background.paper, color: theme.palette.text.primary, boxShadow: theme.shadows[3] } }
-                }}
-              />
-            </Box>
+            <Box sx={{ mt:2, height: isMobile ? 260 : 320, p:0, width: '100%', bgcolor: 'transparent' }}>
+                <LineChart
+                  series={[{ id: 'trend', data: seriesData, label: 'Unemployment', showMark: true, shape: 'circle' }]}
+                  xAxis={[{ data: xAxisData, scaleType: 'point', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, label: 'Year' }]}
+                  colors={[theme.palette.primary.main]}
+                  grid={{ vertical: false, horizontal: true }}
+                  height={isMobile ? 260 : 320}
+                  margin={{ left: isMobile ? 8 : 36, right: 12, top: 8, bottom: 30 }}
+                  sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 1, p: 1 }}
+                  yAxis={[{ label: 'Unemployment rate (youth)', tickLabelStyle: { fontSize: 12, fill: theme.palette.text.secondary }, valueFormatter: (v: any) => typeof v === 'number' ? Number(v).toFixed(1) : String(v) }]}
+                  slotProps={{
+                    tooltip: { sx: { bgcolor: theme.palette.background.paper, color: theme.palette.text.primary, boxShadow: theme.shadows[3] } }
+                  }}
+                />
+              </Box>
           )}
         </Box>
       )}
