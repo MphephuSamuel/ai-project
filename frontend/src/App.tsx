@@ -63,7 +63,7 @@ export default function App() {
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1, display:'flex', alignItems:'center', gap:1 }} component={Link} to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <img src="/image.png" alt="icon" style={{ width:28, height:28, objectFit:'cover', borderRadius:6 }} />
-              Unemployment Predictor
+              Unemployment Rate Predictor
             </Typography>
             <Button color="inherit" component={Link} to="/">Predict</Button>
             <Button color="inherit" component={Link} to="/info">Model Info</Button>
