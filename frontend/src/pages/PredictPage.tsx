@@ -23,6 +23,12 @@ export default function PredictPage(){
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [values, setValues] = useState<string[]>(Array(FEATURE_ORDER.length).fill(''))
   const [result, setResult] = useState<number | null>(null)
+  // GDP values for each year (not used in logic)
+  const [gdpValues, setGdpValues] = useState<string[]>(Array(FEATURE_ORDER.length).fill(''))
+  // Handler for GDP field changes
+  const handleGdpChange = (i:number, v:string) => {
+    const next = [...gdpValues]; next[i] = v; setGdpValues(next)
+  }
   const [model, setModel] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [snack, setSnack] = useState<{open:boolean;msg:string;severity?:'error'|'success'}>({open:false,msg:'',severity:'success'})
@@ -91,10 +97,21 @@ export default function PredictPage(){
         <TextField label="Predict for year (YYYY)" type="number" value={targetYear} onChange={(e)=>setTargetYear(parseInt(e.target.value||'0',10))} size="small" />
         <Typography variant="caption">Current year: {currentYear}</Typography>
       </Box>
+
       <Grid container spacing={2} sx={{ mb:2 }}>
         {FEATURE_ORDER.map((f,i)=> (
           <Grid key={f} item xs={12} sm={6} md={4}>
-            <TextField label={displayYears[i]} value={values[i]} onChange={(e)=>handleChange(i,e.target.value)} size="small" fullWidth variant="outlined" />
+            <TextField label={`Unemployment rate for ${displayYears[i]}`} value={values[i]} onChange={(e)=>handleChange(i,e.target.value)} size="small" fullWidth variant="outlined" />
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* GDP fields for each year */}
+      <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>GDP for each year (optional)</Typography>
+      <Grid container spacing={2} sx={{ mb:2 }}>
+        {FEATURE_ORDER.map((f,i)=> (
+          <Grid key={f+"-gdp"} item xs={12} sm={6} md={4}>
+            <TextField label={`GDP for ${displayYears[i]}`} value={gdpValues[i]} onChange={(e)=>handleGdpChange(i,e.target.value)} size="small" fullWidth variant="outlined" />
           </Grid>
         ))}
       </Grid>
