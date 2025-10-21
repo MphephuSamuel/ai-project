@@ -124,7 +124,7 @@ export default function PredictPage(){
       {result !== null && (
         <Box sx={{ mt:3 }}>
           <Divider sx={{ mb:2 }} />
-          <Typography variant="h6">Prediction: {Number(result).toFixed(2)}</Typography>
+          <Typography variant="h6">Prediction: {Number(result).toFixed(2)}%</Typography>
           <Typography variant="caption">Model: {model}</Typography>
           {seriesData && xAxisData && (
             <Box sx={{ mt:2, height: isMobile ? 260 : 320, p:0, width: '100%', bgcolor: 'transparent' }}>
@@ -132,7 +132,7 @@ export default function PredictPage(){
                   series={[
                     { id: 'trend', data: seriesData, label: 'Unemployment', showMark: true, shape: 'circle' },
                     // a helper series that only contains the final (predicted) point so it can be emphasized
-                    { id: 'pred', data: seriesData.map((v, i) => (i === seriesData.length - 1 ? v : null)), showMark: true, shape: 'circle', label: '' }
+                    { id: 'pred', data: seriesData.map((v, i) => (i === seriesData.length - 1 ? v : null)), showMark: true, shape: 'circle', label: 'Predicted' }
                   ]}
                   xAxis={[{ data: xAxisData, scaleType: 'point', tickLabelStyle: { fontSize: 11, fill: theme.palette.text.secondary }, label: 'Year' }]}
                   colors={[theme.palette.primary.main, theme.palette.secondary.main]}
