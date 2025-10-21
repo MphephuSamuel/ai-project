@@ -155,12 +155,32 @@ export default function PredictPage(){
         <Divider />
         <Typography variant="h6" sx={{ mt:2 }}>Batch prediction (paste CSV or whitespace-separated rows)</Typography>
         <TextField multiline minRows={6} fullWidth value={batchText} onChange={(e)=>setBatchText(e.target.value)} placeholder="one row per line, 6 values per row" sx={{ mt:2 }} />
-          <Box sx={{ mt:2, display:'flex', gap:2, alignItems:'center' }}>
+        <Box sx={{ mt:2, display:'flex', gap:2, alignItems:'center' }}>
           <Button variant="outlined" onClick={onBatch} disabled={loading || targetYear < currentYear} startIcon={<FileUploadIcon />}>Predict Batch</Button>
-          {batchResults && (
-            <Typography>Results: {batchResults.length} rows — {batchResults.map(r=>Number(r).toFixed(2)).join(', ')}</Typography>
-          )}
         </Box>
+        {batchResults && batchResults.length > 0 && (
+          <Box sx={{ mt:3 }}>
+            <Typography variant="subtitle1" sx={{ mb:2 }}>Forecast Results</Typography>
+            <Grid container spacing={2}>
+              {batchResults.map((pred, idx) => {
+                // Parse the input row for display
+                const inputRows = batchText.split(/\r?\n/).map(r=>r.trim()).filter(Boolean)
+                const inputVals = inputRows[idx]?.split(/[\s,]+/) || []
+                // Forecast year: start from the year after the current targetYear
+                const forecastYear = targetYear + idx
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={idx}>
+                    <Paper sx={{ p:2, borderRadius:2, boxShadow:2, display:'flex', flexDirection:'column', alignItems:'flex-start', gap:1 }}>
+                      <Typography variant="h6" color="primary">Forecast for {forecastYear}</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>Prediction: {Number(pred).toFixed(2)}%</Typography>
+                      <Typography variant="caption" color="text.secondary">Input values: {inputVals.map(v => v !== '' ? `${v}%` : '').join(', ')}</Typography>
+                    </Paper>
+                  </Grid>
+                )
+              })}
+            </Grid>
+          </Box>
+        )}
       </Box>
 
       <Snackbar open={snack.open} autoHideDuration={5000} onClose={()=>setSnack(s=>({...s,open:false}))}>
