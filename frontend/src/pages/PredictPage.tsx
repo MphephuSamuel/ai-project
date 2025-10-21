@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { predict, predictBatch } from '../api'
+import { predict } from '../api'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -33,7 +33,8 @@ export default function PredictPage(){
   const [loading, setLoading] = useState(false)
   const [snack, setSnack] = useState<{open:boolean;msg:string;severity?:'error'|'success'}>({open:false,msg:'',severity:'success'})
   const [batchText, setBatchText] = useState('')
-  const [batchResults, setBatchResults] = useState<number[] | null>(null)
+  // const [batchResults, setBatchResults] = useState<number[] | null>(null)
+  const [autoForecastResults, setAutoForecastResults] = useState<Array<{inputs: number[], prediction: number}> | null>(null)
   const [seriesData, setSeriesData] = useState<number[] | null>(null)
   const [xAxisData, setXAxisData] = useState<(string | number)[] | null>(null)
   // Target year logic: allow user to pick the forecast year (Year 7 means predict next year)
@@ -76,16 +77,30 @@ export default function PredictPage(){
     setLoading(false)
   }
 
-  const onBatch = async ()=>{
-    // parse CSV-like lines
-    const rows = batchText.split(/\r?\n/).map(r=>r.trim()).filter(Boolean).map(r=>r.split(/[,\s]+/).map(x=>parseFloat(x)))
-    if(rows.some(r=>r.length !== FEATURE_ORDER.length)){ setSnack({open:true,msg:'Each row must have 6 values',severity:'error'}); return }
+  // Auto-forecast: for the first input row, call predict 3 times, each time using the previous prediction as the next input
+  const onBatch = async () => {
+    // parse first row only
+    const rows = batchText.split(/\r?\n/).map(r=>r.trim()).filter(Boolean).map(r=>r.split(/[\s,]+/).map(x=>parseFloat(x)))
+    if(rows.length === 0 || rows[0].length !== FEATURE_ORDER.length){ setSnack({open:true,msg:'Please enter at least one row with 6 values',severity:'error'}); return }
     setLoading(true)
-    try{
-      const res = await predictBatch(rows)
-      setBatchResults(res.predictions)
-      setModel(res.model)
-    }catch(e:any){ alert('Batch error: '+(e?.message||e)) }
+  // setBatchResults(null)
+    setAutoForecastResults(null)
+    try {
+      let input = rows[0]
+      const results: Array<{inputs: number[], prediction: number}> = []
+      let lastPrediction = null
+      for(let i=0; i<3; ++i) {
+        const res = await predict(input)
+        results.push({inputs: input, prediction: res.prediction})
+        lastPrediction = res.prediction
+        // next input: drop first, append prediction
+        input = [...input.slice(1), lastPrediction]
+      }
+      setAutoForecastResults(results)
+      setModel('auto-forecast')
+    } catch(e:any) {
+      alert('Auto-forecast error: '+(e?.message||e))
+    }
     setLoading(false)
   }
 
@@ -158,27 +173,50 @@ export default function PredictPage(){
         <Box sx={{ mt:2, display:'flex', gap:2, alignItems:'center' }}>
           <Button variant="outlined" onClick={onBatch} disabled={loading || targetYear < currentYear} startIcon={<FileUploadIcon />}>Predict Batch</Button>
         </Box>
-        {batchResults && batchResults.length > 0 && (
+        {autoForecastResults && autoForecastResults.length > 0 && (
           <Box sx={{ mt:3 }}>
-            <Typography variant="subtitle1" sx={{ mb:2 }}>Forecast Results</Typography>
+            <Typography variant="subtitle1" sx={{ mb:2 }}>Auto Forecast Results</Typography>
             <Grid container spacing={2}>
-              {batchResults.map((pred, idx) => {
-                // Parse the input row for display
-                const inputRows = batchText.split(/\r?\n/).map(r=>r.trim()).filter(Boolean)
-                const inputVals = inputRows[idx]?.split(/[\s,]+/) || []
-                // Forecast year: start from the year after the current targetYear
-                const forecastYear = targetYear + idx
+              {autoForecastResults.map((res, idx) => {
+                const forecastYear = targetYear + 1 + idx
                 return (
                   <Grid item xs={12} sm={6} md={4} key={idx}>
-                    <Paper sx={{ p:2, borderRadius:2, boxShadow:2, display:'flex', flexDirection:'column', alignItems:'flex-start', gap:1 }}>
+                    <Paper sx={{ p:2, borderRadius:2, boxShadow:2, display:'flex', flexDirection:'column', alignItems:'flex-start', gap:1, minHeight: 140 }}>
                       <Typography variant="h6" color="primary">Forecast for {forecastYear}</Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>Prediction: {Number(pred).toFixed(2)}%</Typography>
-                      <Typography variant="caption" color="text.secondary">Input values: {inputVals.map(v => v !== '' ? `${v}%` : '').join(', ')}</Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>Prediction: {Number(res.prediction).toFixed(2)}%</Typography>
+                      <Typography variant="caption" color="text.secondary">Input values: {res.inputs.map(v => `${v}%`).join(', ')}</Typography>
                     </Paper>
                   </Grid>
                 )
               })}
             </Grid>
+
+            {/* Trend line below the cards */}
+            <Box sx={{ mt:4, width: '100%' }}>
+              <Typography variant="subtitle2" sx={{ mb:1 }}>Forecast Trend</Typography>
+              {(() => {
+                // Get input values and years from the first input row
+                const inputRows = batchText.split(/\r?\n/).map(r=>r.trim()).filter(Boolean)
+                const inputVals = inputRows.length > 0 ? inputRows[0].split(/[\s,]+/).map(Number) : []
+                // Start trend at the correct year (e.g., 2020), with each input mapped to consecutive years
+                const trendStartYear = targetYear - inputVals.length
+                const numInput = inputVals.length
+                const numForecast = autoForecastResults.length
+                const allYears = Array.from({length: numInput + numForecast}, (_, i) => trendStartYear + 1 + i)
+                const allVals = [...inputVals, ...autoForecastResults.map(r => r.prediction)]
+                return (
+                  <LineChart
+                    series={[{ id: 'trend', data: allVals, label: 'Trend', showMark: true, shape: 'circle' }]}
+                    xAxis={[{ data: allYears, scaleType: 'point', label: 'Year', tickLabelStyle: { fontSize: 11 } }]}
+                    yAxis={[{ label: 'Unemployment rate (%)', tickLabelStyle: { fontSize: 12 } }]}
+                    height={260}
+                    margin={{ left: 36, right: 36, top: 8, bottom: 40 }}
+                    sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 1, p: 1 }}
+                    slotProps={{ tooltip: { sx: { bgcolor: theme.palette.background.paper, color: theme.palette.text.primary, boxShadow: theme.shadows[3] } } }}
+                  />
+                )
+              })()}
+            </Box>
           </Box>
         )}
       </Box>
