@@ -170,6 +170,15 @@ export default function PredictPage(){
         <Divider />
         <Typography variant="h6" sx={{ mt:2 }}>Batch prediction (paste CSV or whitespace-separated rows)</Typography>
         <TextField multiline minRows={6} fullWidth value={batchText} onChange={(e)=>setBatchText(e.target.value)} placeholder="one row per line, 6 values per row" sx={{ mt:2 }} />
+        {/* GDP batch input (not used in prediction) */}
+        <TextField
+          multiline
+          minRows={6}
+          fullWidth
+          placeholder="one row per line, 6 GDP values per row"
+          sx={{ mt:2 }}
+          label="Batch GDP values (6 values per row)"
+        />
         <Box sx={{ mt:2, display:'flex', gap:2, alignItems:'center' }}>
           <Button variant="outlined" onClick={onBatch} disabled={loading || targetYear < currentYear} startIcon={<FileUploadIcon />}>Predict Batch</Button>
         </Box>
